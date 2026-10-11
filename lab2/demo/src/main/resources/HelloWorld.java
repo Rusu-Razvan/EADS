@@ -10,7 +10,7 @@ public class HelloWorld {
     @Value("${greeting.message:Salut implicit!}")
     private String greetingMessage;
 
-    @GetMapping("/hello-world")
+    @GetMapping("/hello")
     public String sayHello() {
         return greetingMessage;
     }
