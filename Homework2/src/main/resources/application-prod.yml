@@ -1,0 +1,4 @@
+app:
+  file:
+    path: "data/prod_data.json"
+    format: "JSON"

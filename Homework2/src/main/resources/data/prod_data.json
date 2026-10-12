@@ -1,0 +1,17 @@
+{
+  "persons": {
+    "person1": {
+      "number": 1,
+      "name": "Silviu",
+      "age": 26,
+      "weigth": 81
+    },
+    "person2":{
+      "number": 2,
+      "name": "Ioana",
+      "age": 10,
+      "weigth": 50
+    }
+
+  }
+}

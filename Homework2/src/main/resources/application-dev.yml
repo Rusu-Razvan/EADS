@@ -1,0 +1,4 @@
+app:
+  file:
+    path: "data/dev_data.csv"
+    format: "CSV"
