@@ -30,6 +30,6 @@ public class Person {
 
     @Override
     public String toString() {
-        return "Person{număr=" + number + ", nume='" + name + "', vârstă=" + age + ", greutate=" + weight + "}";
+        return "Person{numar=" + number + ", nume='" + name + "', varsta=" + age + ", greutate=" + weight + "}";
     }
 }

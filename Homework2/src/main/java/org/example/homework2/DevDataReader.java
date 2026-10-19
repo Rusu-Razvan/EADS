@@ -40,7 +40,7 @@ public class DevDataReader implements DataReader {
                 String line;
                 boolean isFirstLine = true;
                 while ((line = reader.readLine()) != null) {
-                    if (isFirstLine) { // Ignorăm antetul (person_number, name...)
+                    if (isFirstLine) {
                         isFirstLine = false;
                         continue;
                     }

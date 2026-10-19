@@ -51,7 +51,6 @@ public class ProdDataReader implements DataReader {
                     int number = node.get("number").asInt();
                     String name = node.get("name").asText();
                     int age = node.get("age").asInt();
-                    // Atenție la ortografia "weigth" din fișierul tău JSON
                     int weight = node.has("weigth") ? node.get("weigth").asInt() : node.get("weight").asInt();
 
                     persons.add(new Person(number, name, age, weight));

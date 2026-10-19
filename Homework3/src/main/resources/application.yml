@@ -1,0 +1,8 @@
+library:
+  policy:
+    type: "role-based" # "fixed" sau "role-based"
+    limit:
+      fixed: 3
+      student: 4
+      regular: 3
+      premium: 5

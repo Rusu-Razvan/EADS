@@ -1,0 +1,8 @@
+- Am definit interfața Engine pentru a decupla logica.
+- Am creat o clasă concretă (V6Engine) care implementează interfața Engine și am marcat-o cu @Component pentru a fi gestionată automat de containerul Spring (IoC).
+- Implementarea Punctelor de Injecție în clasa Car: Am demonstrat toate cele 4 tipuri majore de Dependency Injection:
+  - Constructor Injection: Dependența este pasată direct prin constructorul clasei (executat primul).
+  - Field Injection: Dependența este injectată direct pe un câmp privat folosind anotația @Autowired.
+  - Setter Injection: Dependența este setată prin intermediul unei metode de tip setter adnotată cu @Autowired.
+  - General Method Injection: Dependența este pasată printr-o metodă custom de configurare adnotată cu @Autowired.
+- Prin mesaje în consolă și utilizarea adnotării @PostConstruct, am evidențiat ordinea cronologică în care Spring realizează injecțiile: Constructor $\rightarrow$ Field $\rightarrow$ Setter/Method $\rightarrow$ PostConstruct.
