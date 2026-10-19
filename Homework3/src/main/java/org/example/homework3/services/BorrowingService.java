@@ -8,25 +8,27 @@ import org.example.homework3.repository.MemberRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.example.homework3.events.BookBorrowEvent;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 public class BorrowingService {
 
-    private final BorrowingPolicy borrowingPolicy; // S-ar putea sa n-am nevoie de asta. Vad ca policy-ul nu este folosit nicaieri. E corect asa?
     private final MemberRepository memberRepository;
     private final BookRepository bookRepository;
     private final ApplicationEventPublisher eventPublisher;
 
+    private final int borrowingEventThreshold;
 
-    public BorrowingService(BorrowingPolicy borrowingPolicy,
-                            MemberRepository memberRepository,
+
+    public BorrowingService(MemberRepository memberRepository,
                             BookRepository bookRepository,
-                            ApplicationEventPublisher eventPublisher) {
+                            ApplicationEventPublisher eventPublisher,
+                            @Value("${library.borrowing.event-threshold:2}") int borrowingEventThreshold) {
 
-        this.borrowingPolicy = borrowingPolicy;
         this.memberRepository = memberRepository;
         this.bookRepository = bookRepository;
         this.eventPublisher = eventPublisher;
+        this.borrowingEventThreshold = borrowingEventThreshold;
     }
 
 
@@ -38,9 +40,8 @@ public class BorrowingService {
         book.setBorrowed(true);
         member.getBorrowedBooks().add(book);
 
-        //as adauga pragul peste care sa se declanseze evenimentul in app.yml si sa iau valoare cu @Value sau
-        // @Congig(prefix = _).
-        if (member.getBorrowedBooks().size() >= 1) {
+
+        if (member.getBorrowedBooks().size() >= borrowingEventThreshold) {
             eventPublisher.publishEvent(new BookBorrowEvent(member, member.getBorrowedBooks().size()));
         }
     }

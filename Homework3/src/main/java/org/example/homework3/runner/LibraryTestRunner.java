@@ -24,7 +24,7 @@ public class LibraryTestRunner implements CommandLineRunner {
         this.bookRepository = bookRepository;
         this.memberRepository = memberRepository;
         this.borrowingService = borrowingService;
-    }  //Aici trebuia sa instantiez repository-urile?? Nu ar fi trebuit sa instantiez numai serviciile?
+    }
 
     @Override
     public void run(String... args) throws Exception {

@@ -6,3 +6,5 @@ library:
       student: 4
       regular: 3
       premium: 5
+  borrowing:
+    event-threshold: 1
