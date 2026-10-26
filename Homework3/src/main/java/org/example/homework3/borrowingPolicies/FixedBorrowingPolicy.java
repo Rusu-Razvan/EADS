@@ -4,6 +4,7 @@ import org.example.homework3.domainModel.Member;
 import org.example.homework3.domainModel.MemberRole;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.example.homework3.borrowingPolicies.LibraryPolicyConfiguration;
 
 @Component
 @ConditionalOnProperty(name = "library.policy.type", havingValue = "fixed")

@@ -1,0 +1,56 @@
+package org.example.vehicle_routing_optimization_system.model;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "vehicles")
+public class Vehicle {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private double capacity;
+
+    @Column(nullable = false)
+    private boolean available = true;
+
+    @ManyToOne
+    @JoinColumn(name = "depot_id", nullable = false)
+    private Depot depot;
+
+    @OneToOne
+    @JoinColumn(name = "driver_id", unique = true)
+    private Driver driver;
+
+    public Vehicle() {}
+
+    public Vehicle(String name, double capacity, Depot depot) {
+        this.name = name;
+        this.capacity = capacity;
+        this.depot = depot;
+    }
+
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public double getCapacity() { return capacity; }
+    public void setCapacity(double capacity) { this.capacity = capacity; }
+
+    public boolean isAvailable() { return available; }
+    public void setAvailable(boolean available) { this.available = available; }
+
+    public Depot getDepot() { return depot; }
+    public void setDepot(Depot depot) { this.depot = depot; }
+
+    public Driver getDriver() { return driver; }
+    public void setDriver(Driver driver) { this.driver = driver; }
+}
