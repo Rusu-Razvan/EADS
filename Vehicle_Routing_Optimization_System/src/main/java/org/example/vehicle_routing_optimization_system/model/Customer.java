@@ -12,14 +12,15 @@ public class Customer extends Person {
     private String address;
 
     @Column(nullable = false)
-    private String coordinates;
+    @Embedded
+    private Coordinates coordinates;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Delivery> deliveries = new ArrayList<>();
 
     public Customer() {}
 
-    public Customer(String name, String email, String phone, String address, String coordinates) {
+    public Customer(String name, String email, String phone, String address, Coordinates coordinates) {
         super(name, email, phone);
         this.address = address;
         this.coordinates = coordinates;
@@ -29,8 +30,8 @@ public class Customer extends Person {
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
 
-    public String getCoordinates() { return coordinates; }
-    public void setCoordinates(String coordinates) { this.coordinates = coordinates; }
+    public Coordinates getCoordinates() { return coordinates; }
+    public void setCoordinates(Coordinates coordinates) { this.coordinates = coordinates; }
 
     public List<Delivery> getDeliveries() { return deliveries; }
     public void setDeliveries(List<Delivery> deliveries) { this.deliveries = deliveries; }

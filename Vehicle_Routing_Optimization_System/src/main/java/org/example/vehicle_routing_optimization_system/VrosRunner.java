@@ -6,98 +6,97 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class VrosRunner implements CommandLineRunner {
 
     private final CustomerService customerService;
     private final DepotService depotService;
-    private final DriverService driverService;
     private final VehicleService vehicleService;
     private final DeliveryService deliveryService;
+    private final ScenarioService scenarioService;
 
     public VrosRunner(CustomerService customerService,
                       DepotService depotService,
-                      DriverService driverService,
                       VehicleService vehicleService,
-                      DeliveryService deliveryService) {
+                      DeliveryService deliveryService,
+                      ScenarioService scenarioService) {
         this.customerService = customerService;
         this.depotService = depotService;
-        this.driverService = driverService;
         this.vehicleService = vehicleService;
         this.deliveryService = deliveryService;
+        this.scenarioService = scenarioService;
     }
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println(">>> Pornire VROS Test Runner (Homework) <<<");
-
-        // Curățăm datele existente pentru a porni de la zero (opțional, respectând ordinea cheilor străine)
-        // Notă: În aplicații reale ștergerea se face prin metode dedicate de delete,
-        // aici doar adăugăm date noi dacă baza e goală.
+        System.out.println(">>> Pornire VROS Test Runner (Homework Nou) <<<");
 
         if (customerService.getAllCustomers().isEmpty()) {
-            // 1. Creare și salvare Clienți
-            Customer c1 = new Customer("Alexandru Popescu", "alex.popescu@gmail.com", "0721112233", "Str. Libertății 15", "44.4322, 26.1062");
-            Customer c2 = new Customer("Maria Ionescu", "maria.ionescu@gmail.com", "0733445566", "Bd. Unirii 40", "44.4211, 26.1145");
+            // 1. Clienți cu structura de Coordinates (x, y)
+            Customer c1 = new Customer();
+            c1.setName("Alexandru Popescu");
+            c1.setEmail("alex.popescu@gmail.com");
+            c1.setPhone("0721112233");
+            c1.setAddress("Str. Principală 15");
+            c1.setCoordinates(new Coordinates(10, 20));
+
+            Customer c2 = new Customer();
+            c2.setName("Maria Ionescu");
+            c2.setEmail("maria.ionescu@gmail.com");
+            c2.setPhone("0733445566");
+            c2.setAddress("Bd. Unirii 40");
+            c2.setCoordinates(new Coordinates(15, 25));
 
             customerService.saveCustomer(c1);
             customerService.saveCustomer(c2);
 
-            // 2. Creare și salvare Depozit (Depot)
-            Depot depot = new Depot("Depozitul Central București", "44.4400, 26.0900");
+            // 2. Depozit
+            Depot depot = new Depot();
+            depot.setName("Depozitul Central București");
+            depot.setCoordinates(new Coordinates(0, 0));
             depotService.saveDepot(depot);
 
-            // 3. Creare și salvare Șofer (Driver)
-            Driver driver = new Driver("Ion Șofer", "ion.sofer@vros.com", "0755667788");
-            driverService.saveDriver(driver);
+            // 3. Vehicule
+            Vehicle v1 = new Vehicle();
+            v1.setName("Camionetă 1.5T");
+            v1.setCapacity(1500.0);
+            v1.setDepot(depot);
+            vehicleService.saveVehicle(v1);
 
-            // 4. Creare și salvare Vehicul (Vehicle legat de Depot și Driver)
-            Vehicle vehicle = new Vehicle("Camioneta 1.5T", 1500.0, depot);
-            vehicle.setDriver(driver);
-            vehicleService.saveVehicle(vehicle);
+            Vehicle v2 = new Vehicle();
+            v2.setName("Dubă 3.5T");
+            v2.setCapacity(3500.0);
+            v2.setDepot(depot);
+            vehicleService.saveVehicle(v2);
 
-            // 5. Creare și salvare Livrare (Delivery legată de Customer)
-            Delivery delivery1 = new Delivery(250.0, "Livrare fragilă - etajul 2", LocalDateTime.now().plusHours(2), c1);
-            Delivery delivery2 = new Delivery(500.0, "Livrare paletizată", LocalDateTime.now().plusHours(4), c2);
+            // 4. Livrări
+            Delivery d1 = new Delivery();
+            d1.setCustomer(c1);
+            d1.setQuantity(250.0);
+            d1.setNotes("Livrare fragilă");
+            d1.setTimestamp(LocalDateTime.now().plusHours(2));
+            deliveryService.saveDelivery(d1);
 
-            deliveryService.saveDelivery(delivery1);
-            deliveryService.saveDelivery(delivery2);
+            Delivery d2 = new Delivery();
+            d2.setCustomer(c2);
+            d2.setQuantity(500.0);
+            d2.setNotes("Livrare paletizată");
+            d2.setTimestamp(LocalDateTime.now().plusHours(4));
+            deliveryService.saveDelivery(d2);
 
-            System.out.println(">>> Datele de test au fost inserate cu succes! <<<");
+            // 5. Scenariu (Relația ManyToMany cu Vehicule și Livrări)
+            Scenario scenario = new Scenario();
+            scenario.setName("Scenariul 1 - București Nord");
+            scenario.setVehicles(new HashSet<>(Set.of(v1, v2)));
+            scenario.setDeliveries(new HashSet<>(Set.of(d1, d2)));
+            scenarioService.saveScenario(scenario);
+
+            System.out.println(">>> Datele de test cu noul model au fost inserate cu succes! <<<");
         } else {
-
-            System.out.println(">>> Baza de date conține deja date. Testăm query-urile personalizate: <<<");
-
-            // --- TEST 1: Derived Query Method (findByEmail) ---
-            String searchEmail = "alex.popescu@gmail.com";
-            Optional<Customer> foundByEmail = customerService.getCustomerByEmail(searchEmail);
-            if (foundByEmail.isPresent()) {
-                System.out.println("[Derived Query] Găsit după email (" + searchEmail + "): " + foundByEmail.get().getName());
-            } else {
-                System.out.println("[Derived Query] Clientul cu emailul " + searchEmail + " nu a fost găsit.");
-            }
-
-            // --- TEST 2: Explicitly defined JPQL Query (searchByAddressKeyword) ---
-            String keyword = "Unirii";
-            List<Customer> foundByAddress = customerService.searchCustomersByAddress(keyword);
-            System.out.println("[JPQL Query] Clienți găsiți cu adresa conținând '" + keyword + "': " + foundByAddress.size());
-            for (Customer c : foundByAddress) {
-                System.out.println("   -> " + c.getName() + " | Adresă: " + c.getAddress());
-            }
-
-            // --- TEST 3: Transactional Modifying Query (updateCustomerPhone) ---
-            // Luăm ID-ul primului client existent pentru test
-            List<Customer> allCustomers = customerService.getAllCustomers();
-            if (!allCustomers.isEmpty()) {
-                Long targetId = allCustomers.get(0).getId();
-                String newPhone = "0799887766";
-
-                int rowsUpdated = customerService.updatePhone(targetId, newPhone);
-                System.out.println("[Modifying Query] Telefon actualizat cu succes pentru ID-ul " + targetId + ". Rânduri modificate: " + rowsUpdated);
-            }
+            System.out.println(">>> Baza de date conține deja date. Număr scenarii: " + scenarioService.getAllScenarios().size() + " <<<");
         }
     }
 }

@@ -16,14 +16,15 @@ public class Depot {
     private String name;
 
     @Column(nullable = false)
-    private String coordinates;
+    @Embedded
+    private Coordinates coordinates;
 
     @OneToMany(mappedBy = "depot", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vehicle> vehicles = new ArrayList<>();
 
     public Depot() {}
 
-    public Depot(String name, String coordinates) {
+    public Depot(String name, Coordinates coordinates) {
         this.name = name;
         this.coordinates = coordinates;
     }
@@ -34,8 +35,8 @@ public class Depot {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public String getCoordinates() { return coordinates; }
-    public void setCoordinates(String coordinates) { this.coordinates = coordinates; }
+    public Coordinates getCoordinates() { return coordinates; }
+    public void setCoordinates(Coordinates coordinates) { this.coordinates = coordinates; }
 
     public List<Vehicle> getVehicles() { return vehicles; }
     public void setVehicles(List<Vehicle> vehicles) { this.vehicles = vehicles; }
