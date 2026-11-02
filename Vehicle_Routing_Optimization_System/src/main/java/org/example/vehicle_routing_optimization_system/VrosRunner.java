@@ -6,6 +6,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class VrosRunner implements CommandLineRunner {
@@ -66,7 +68,36 @@ public class VrosRunner implements CommandLineRunner {
 
             System.out.println(">>> Datele de test au fost inserate cu succes! <<<");
         } else {
-            System.out.println(">>> Baza de date conține deja date. Număr clienți: " + customerService.getAllCustomers().size() + " <<<");
+
+            System.out.println(">>> Baza de date conține deja date. Testăm query-urile personalizate: <<<");
+
+            // --- TEST 1: Derived Query Method (findByEmail) ---
+            String searchEmail = "alex.popescu@gmail.com";
+            Optional<Customer> foundByEmail = customerService.getCustomerByEmail(searchEmail);
+            if (foundByEmail.isPresent()) {
+                System.out.println("[Derived Query] Găsit după email (" + searchEmail + "): " + foundByEmail.get().getName());
+            } else {
+                System.out.println("[Derived Query] Clientul cu emailul " + searchEmail + " nu a fost găsit.");
+            }
+
+            // --- TEST 2: Explicitly defined JPQL Query (searchByAddressKeyword) ---
+            String keyword = "Unirii";
+            List<Customer> foundByAddress = customerService.searchCustomersByAddress(keyword);
+            System.out.println("[JPQL Query] Clienți găsiți cu adresa conținând '" + keyword + "': " + foundByAddress.size());
+            for (Customer c : foundByAddress) {
+                System.out.println("   -> " + c.getName() + " | Adresă: " + c.getAddress());
+            }
+
+            // --- TEST 3: Transactional Modifying Query (updateCustomerPhone) ---
+            // Luăm ID-ul primului client existent pentru test
+            List<Customer> allCustomers = customerService.getAllCustomers();
+            if (!allCustomers.isEmpty()) {
+                Long targetId = allCustomers.get(0).getId();
+                String newPhone = "0799887766";
+
+                int rowsUpdated = customerService.updatePhone(targetId, newPhone);
+                System.out.println("[Modifying Query] Telefon actualizat cu succes pentru ID-ul " + targetId + ". Rânduri modificate: " + rowsUpdated);
+            }
         }
     }
 }

@@ -1,12 +1,12 @@
 -- 1. Tabela Depots
-CREATE TABLE depots (
+CREATE TABLE IF NOT EXISTS depots(
                         id BIGSERIAL PRIMARY KEY,
                         name VARCHAR(100) NOT NULL,
                         coordinates VARCHAR(100) NOT NULL
 );
 
 -- 2. Tabela Drivers
-CREATE TABLE drivers (
+CREATE TABLE IF NOT EXISTS drivers (
                          id BIGSERIAL PRIMARY KEY,
                          name VARCHAR(100) NOT NULL,
                          email VARCHAR(100) UNIQUE NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE drivers (
 );
 
 -- 3. Tabela Vehicles
-CREATE TABLE vehicles (
+CREATE TABLE IF NOT EXISTS vehicles (
                           id BIGSERIAL PRIMARY KEY,
                           name VARCHAR(50) NOT NULL,
                           capacity DOUBLE PRECISION NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE vehicles (
 );
 
 -- 4. Tabela Customers
-CREATE TABLE customers (
+CREATE TABLE IF NOT EXISTS customers (
                            id BIGSERIAL PRIMARY KEY,
                            name VARCHAR(100) NOT NULL,
                            email VARCHAR(100) UNIQUE NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE customers (
 );
 
 -- 5. Tabela Deliveries
-CREATE TABLE deliveries (
+CREATE TABLE IF NOT EXISTS deliveries (
                             id BIGSERIAL PRIMARY KEY,
                             customer_id BIGINT NOT NULL,
                             quantity DOUBLE PRECISION NOT NULL,

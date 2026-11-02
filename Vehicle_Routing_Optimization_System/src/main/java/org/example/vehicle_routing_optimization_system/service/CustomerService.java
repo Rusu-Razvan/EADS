@@ -24,11 +24,26 @@ public class CustomerService {
         return customerRepository.findById(id);
     }
 
-    public Customer saveCustomer(Customer customer) {
-        return customerRepository.save(customer);
+    public void saveCustomer(Customer customer) {
+        customerRepository.save(customer);
     }
 
     public void deleteCustomer(Long id) {
         customerRepository.deleteById(id);
+    }
+
+    // 1. Pentru Derived Query (findByEmail)
+    public Optional<Customer> getCustomerByEmail(String email) {
+        return customerRepository.findByEmail(email);
+    }
+
+    // 2. Pentru JPQL Query (searchByAddressKeyword)
+    public List<Customer> searchCustomersByAddress(String keyword) {
+        return customerRepository.searchByAddressKeyword(keyword);
+    }
+
+    // 3. Pentru Modifying Query (updateCustomerPhone)
+    public int updatePhone(Long id, String newPhone) {
+        return customerRepository.updateCustomerPhone(id, newPhone);
     }
 }
