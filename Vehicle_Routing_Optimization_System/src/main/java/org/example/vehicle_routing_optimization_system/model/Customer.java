@@ -1,5 +1,6 @@
 package org.example.vehicle_routing_optimization_system.model;
 
+import org.example.vehicle_routing_optimization_system.model.User;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +8,9 @@ import java.util.List;
 @Entity
 @Table(name = "customers")
 public class Customer extends Person {
+
+    @OneToOne(mappedBy = "customer")
+    private User user;
 
     @Column(nullable = false)
     private String address;
