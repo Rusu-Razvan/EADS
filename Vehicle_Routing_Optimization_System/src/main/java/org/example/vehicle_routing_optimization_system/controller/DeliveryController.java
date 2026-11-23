@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/api/deliveries")
@@ -18,16 +19,24 @@ public class DeliveryController {
     public DeliveryController(DeliveryService service) { this.service = service; }
 
     @GetMapping 
-    public List<DeliveryDTO> all() { return service.getAllDeliveries().stream().map(this::dto).collect(Collectors.toList()); }
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
+    public List<DeliveryDTO> all(Authentication authentication) {
+        List<Delivery> deliveries = authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"))
+                ? service.getAllDeliveries()
+                : service.getDeliveriesForUser(authentication.getName());
+        return deliveries.stream().map(this::dto).collect(Collectors.toList());
+    }
     
     @GetMapping("/{id}") 
+    @PreAuthorize("hasRole('ADMIN') or @deliveryAuthorization.isOwner(#id, authentication)")
     public DeliveryDTO one(@PathVariable Long id) { return dto(service.getRequired(id)); }
     
-    @PostMapping @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
+    @PostMapping @PreAuthorize("hasRole('ADMIN') or @customerAuthorization.isOwner(#input.customerId, authentication)")
     public ResponseEntity<DeliveryDTO> create(@Valid @RequestBody DeliveryDTO input) {
         return ResponseEntity.status(HttpStatus.CREATED).body(dto(save(input, new Delivery())));
     }
-    @PutMapping("/{id}") @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
+    @PutMapping("/{id}") @PreAuthorize("hasRole('ADMIN') or @deliveryAuthorization.isOwner(#id, authentication)")
     public DeliveryDTO update(@PathVariable Long id, @Valid @RequestBody DeliveryDTO input) {
         return dto(save(input, service.getRequired(id)));
     }

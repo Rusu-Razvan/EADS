@@ -9,6 +9,7 @@ import org.example.vehicle_routing_optimization_system.dto.CoordinatesDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +35,16 @@ public class CustomerService {
 
     public Customer saveCustomer(Customer customer) {
         return customerRepository.save(customer);
+    }
+
+    public Customer createProfile(String name, String email, String phone,
+                                  String address, Integer x, Integer y) {
+        Customer customer = new Customer(name, email, phone, address, new Coordinates(x, y));
+        return customerRepository.save(customer);
+    }
+
+    public Optional<Customer> findByEmail(String email) {
+        return customerRepository.findByEmail(email);
     }
 
     public CustomerDTO getCustomerDtoById(Long id) {

@@ -35,7 +35,7 @@ public class SecurityConfigProd {
                         .requestMatchers(HttpMethod.POST, "/login", "/register",
                                 "/api/auth/login", "/api/auth/register").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll() // GET public unde e rezonabil
+                        .requestMatchers(HttpMethod.GET, "/api/vehicles/**", "/api/scenarios/**").permitAll()
                         .anyRequest().authenticated()
                 );
 

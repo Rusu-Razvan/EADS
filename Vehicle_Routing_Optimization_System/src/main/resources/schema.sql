@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS vehicles CASCADE;
 DROP TABLE IF EXISTS drivers CASCADE;
 DROP TABLE IF EXISTS depots CASCADE;
 DROP TABLE IF EXISTS customers CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
 
 
 -- Tabela Users pentru stocarea conturilor, parolelor criptate și rolurilor

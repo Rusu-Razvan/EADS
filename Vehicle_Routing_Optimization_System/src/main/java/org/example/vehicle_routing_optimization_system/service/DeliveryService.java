@@ -4,6 +4,7 @@ import org.example.vehicle_routing_optimization_system.model.Delivery;
 import org.example.vehicle_routing_optimization_system.model.Customer;
 import org.example.vehicle_routing_optimization_system.exception.ResourceNotFoundException;
 import org.example.vehicle_routing_optimization_system.repository.DeliveryRepository;
+import org.example.vehicle_routing_optimization_system.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,15 +15,25 @@ public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
     private final org.example.vehicle_routing_optimization_system.repository.CustomerRepository customerRepository;
+    private final UserRepository userRepository;
 
     public DeliveryService(DeliveryRepository deliveryRepository,
-                           org.example.vehicle_routing_optimization_system.repository.CustomerRepository customerRepository) {
+                           org.example.vehicle_routing_optimization_system.repository.CustomerRepository customerRepository,
+                           UserRepository userRepository) {
         this.deliveryRepository = deliveryRepository;
         this.customerRepository = customerRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Delivery> getAllDeliveries() {
         return deliveryRepository.findAll();
+    }
+
+    public List<Delivery> getDeliveriesForUser(String email) {
+        Long customerId = userRepository.findByEmail(email)
+                .map(user -> user.getCustomer() == null ? null : user.getCustomer().getId())
+                .orElse(null);
+        return customerId == null ? List.of() : deliveryRepository.findByCustomerId(customerId);
     }
 
     public Optional<Delivery> getDeliveryById(Long id) {

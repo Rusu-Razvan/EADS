@@ -1,16 +1,13 @@
 package org.example.vehicle_routing_optimization_system.controller;
 
-import org.example.vehicle_routing_optimization_system.model.Role;
-import org.example.vehicle_routing_optimization_system.model.User;
-import org.example.vehicle_routing_optimization_system.repository.UserRepository;
 import org.example.vehicle_routing_optimization_system.security.JwtUtils;
+import org.example.vehicle_routing_optimization_system.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -20,47 +17,25 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final AuthService authService;
     private final JwtUtils jwtUtils;
 
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository,
-                          PasswordEncoder passwordEncoder, JwtUtils jwtUtils) {
+    public AuthController(AuthenticationManager authenticationManager, AuthService authService,
+                          JwtUtils jwtUtils) {
         this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.authService = authService;
         this.jwtUtils = jwtUtils;
     }
 
     @PostMapping({"/register", "/api/auth/register"})
     public ResponseEntity<?> registerUser(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
-        String password = request.get("password");
-        if (email == null || email.isBlank() || password == null || password.isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Emailul si parola sunt obligatorii."));
-        }
-        if (userRepository.findByEmail(email).isPresent()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Emailul este deja folosit!"));
-        }
-
-        User user = new User();
-        user.setEmail(email);
-        user.setUsername(email);
-        user.setPassword(passwordEncoder.encode(password));
-        String requestedRole = request.getOrDefault("role", "ROLE_CUSTOMER");
-        Role role;
         try {
-            role = Role.valueOf(requestedRole.toUpperCase());
+            return ResponseEntity.ok(authService.register(request));
+        } catch (AuthService.RegistrationForbiddenException exception) {
+            return ResponseEntity.status(403).body(Map.of("error", exception.getMessage()));
         } catch (IllegalArgumentException exception) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Rol invalid."));
+            return ResponseEntity.badRequest().body(Map.of("error", exception.getMessage()));
         }
-        if (role == Role.ROLE_ADMIN) {
-            return ResponseEntity.status(403).body(Map.of("error", "ADMIN nu poate fi creat prin auto-inregistrare."));
-        }
-        user.setRole(role);
-
-        userRepository.save(user);
-        return ResponseEntity.ok(Map.of("message", "Utilizator Ã®nregistrat cu succes!"));
     }
 
     @PostMapping({"/login", "/api/auth/login"})

@@ -28,6 +28,14 @@ public class DriverService {
         return driverRepository.save(driver);
     }
 
+    public Driver createProfile(String name, String email, String phone) {
+        return driverRepository.save(new Driver(name, email, phone));
+    }
+
+    public Optional<Driver> findByEmail(String email) {
+        return driverRepository.findByEmail(email);
+    }
+
     public void deleteDriver(Long id) {
         driverRepository.deleteById(id);
     }
